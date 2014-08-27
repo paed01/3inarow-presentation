@@ -1,7 +1,7 @@
 {
   "name": "3inarow-presentation",
   "version": "1.0.0",
-  "description": "3in1 game",
+  "description": "3 in a row game",
   "main": "index.js",
   "scripts": {
     "test": "npm test"
