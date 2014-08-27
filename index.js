@@ -51,16 +51,17 @@ var three = [7, 56, 73, 84, 146, 273, 292, 448];
 function streak(checksum) {
     var streak = [];
     var b = checksum.toString(2);
-    var str = new Array(b.length + 1).join('0');
-    for (var i = 0; i < b.length; i++) {
-        var comp = str;
+    console.log('#streak', b);
+
+    // var str = new Array(b.length + 1).join('0').split();
+    for (var i = b.length - 1; i >= 0; i--) {
         if (b[i] === '1') {
-            comp[i] = b[i];
+            var comp = '1' + new Array(b.length - i).join('0');
+            
+            console.log('#streak', b, i, comp);
 
             console.log(comp);
-
             streak.push(parseInt(comp, 2));
-            break;
         }
     }
 
@@ -141,13 +142,12 @@ server.listen(8080, function() {
     var set = 3000;
     var timer = setInterval(function() {
         getMaxVote(board, function(err, game) {
-            console.log(board, game);
-
             io.sockets.emit('game', {
                 board: board,
                 game: game
             });
             if (game) {
+                console.log(board, game);
                 board = createBoard();
             }
         });
