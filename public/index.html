@@ -105,8 +105,8 @@
                         return;
                     if (me.checked) {
                         $this.trigger('check', me);
-                    } else {
-                        // $this.html(!me.votes  ? '[' + me.votes + ']' : me.votes);
+                    } else if (typeof me.votes === 'number') {
+                        $this.html(!me.votes  ? '[' + me.votes + ']' : me.votes);
                     }
                 });
 
@@ -131,10 +131,10 @@
                     $wr.trigger('gameover', gamedata);
                 });
 
-                socket.on('vote', function(data) {
+                socket.on('vote', function(field) {
                     var board = {};
-                    board[data.id] = data;
-                    $('.col-xs-4[rel=' + data.id + '] a').trigger('set', board);
+                    board[field.id] = field;
+                    $('.col-xs-4[rel=' + field.id + '] a').trigger('set', board);
                 });
             });
         </script>
