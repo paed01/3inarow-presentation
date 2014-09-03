@@ -49,17 +49,17 @@
         </div>
         <script type="text/javascript" src="/js/jquery.min.js"></script>
         <script type="text/javascript" src="/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="/js/game.js"></script>
         <script type="text/javascript">
             $(function() {
                 var $wr = $('body');
-                var socket = io();
+                var game = new Game();
 
                 $wr.on('reset', 'a.btn', function(e) {
-                    $(this).attr('class', 'btn btn-default').html('[ ]');
+                    $(this).attr('class', 'btn btn-default').html('[0]');
                 });
 
-                $wr.on('check', 'a.btn:not(.disabled)', function(e, data) {
+                $wr.on('check', 'a.btn', function(e, data) {
                     $(this).addClass('disabled').html(data.checked);
                 });
 
@@ -76,13 +76,11 @@
                     $(this).addClass('btn-warning').addClass('disabled');
                 });
 
-                $wr.on('start', function(e, gamedata) {
-                    console.log(gamedata);
-
-                    $('header').html('3 in a row - Start with ' + gamedata.sign);
+                $wr.on('start', function(e) {
+                    $('header').html('3 in a row - Start');
                     $('a.btn').trigger('reset');
                 });
-
+ 
                 $wr.on('gameover', function(e, gamedata) {
                     var result = gamedata.result;
 
@@ -97,44 +95,27 @@
                     }
                 });
 
-                $wr.on('set', 'a.btn', function(e, board) {
-                    var $this = $(this);
-                    var id = $this.closest('.col-xs-4').attr('rel');
-                    var me = board[id];
-                    if (!me)
-                        return;
-                    if (me.checked) {
-                        $this.trigger('check', me);
-                    } else {
-                        // $this.html(!me.votes  ? '[' + me.votes + ']' : me.votes);
-                    }
+                game.start('X', function() {
+                    $wr.trigger('start');
                 });
 
                 $wr.on('click', 'a.btn', function(e) {
                     var $this = $(this);
                     var id = $this.closest('.col-xs-4').attr('rel');
-                    socket.emit('check', {
-                        id: id
+                    game.check(id, function(err, over) {
+
+                        $this.trigger('check', game.board[id]);
+                        if (over) {
+                            $wr.trigger('gameover', over);
+
+                            // Restart game after some time
+                            setTimeout(function() {
+                                game.start(game.sign, function() {
+                                    $wr.trigger('start');
+                                });
+                            }, 3000);
+                        }
                     });
-                });
-
-                socket.on('game', function(gamedata) {
-                    $('header').html('3 in a row - Game on ' + gamedata.sign);
-                    $('a.btn').trigger('set', gamedata.board);
-                });
-
-                socket.on('start', function(gamedata) {
-                    $wr.trigger('start', gamedata);
-                });
-
-                socket.on('end', function(gamedata) {
-                    $wr.trigger('gameover', gamedata);
-                });
-
-                socket.on('vote', function(data) {
-                    var board = {};
-                    board[data.id] = data;
-                    $('.col-xs-4[rel=' + data.id + '] a').trigger('set', board);
                 });
             });
         </script>

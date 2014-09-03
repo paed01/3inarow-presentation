@@ -1,11 +1,26 @@
 var http = require('http');
 var fs = require('fs');
+var util = require('util');
+var EventEmitter = require('events').EventEmitter;
+var Browserify = require('browserify');
+var Game = require('./lib/game');
+var game = new Game();
 
 var server = http.createServer(function(req, res) {
     if (req.url == '/') {
         return fs.readFile('./public/index.html', function(err, content) {
             res.end(content);
         });
+    } else if (req.url == '/local') {
+        return fs.readFile('./public/index_local.html', function(err, content) {
+            res.end(content);
+        });
+    } else if (req.url == '/game.js') {
+        var browserify = Browserify();
+        browserify.require('./lib/game.js', {
+            expose: 'Game'
+        });
+        browserify.bundle().pipe(res);
     } else {
         return fs.readFile(__dirname + '/public' + req.url, function(err, content) {
             if (err) {
@@ -17,139 +32,114 @@ var server = http.createServer(function(req, res) {
     }
 
 });
-var io = require('socket.io')(server);
 
-function createBoard() {
-    var board = {};
-    // for (var c = 1; c < 4; c++) {
-    //     for (var r = 1; r < 4; r++) {
-    //         board[r * 10 + c] = {
-    //             row: r,
-    //             col: c,
-    //             votes: 0
-    //         };
-    //     }
-    // }
+var OnlineGame = function() {
+    this.started = false;
+    this.game = new Game();
+};
 
-    for (var i = 1; i < 257; i *= 2) {
-        board[i] = {
-            id: i,
-            votes: 0
-        };
-        console.log('#createBoard', i)
-    }
+util.inherits(OnlineGame, EventEmitter);
 
+OnlineGame.prototype.start = function(callback) {
+    var _self = this;
+    var innerCallback = typeof callback === 'function' ? callback : function() {};
 
-    return board;
-}
-var board = createBoard();
+    if (this.started)
+        return innerCallback(null);
+    this.game.start(this.game.sign, function(err) {
+        _self.started = true;
+        _self.emit('start', _self.game);
+        return innerCallback(null);
+    });
+};
 
-var sign = 'X';
+OnlineGame.prototype.end = function() {
+    this.started = false;
+    this.emit('end', this.game);
 
-var three = [7, 56, 73, 84, 146, 273, 292, 448];
+    // Restart game after a while
+    this.timer = setTimeout((function() {
+        this.start(function() {
+            console.log('game restarted');
+        });
+    }).bind(this), 5000);
+};
 
-function streak(checksum) {
-    var streak = [];
-    var b = checksum.toString(2);
-    console.log('#streak', b);
+OnlineGame.prototype.check = function(id, callback) {
+    var _self = this;
+    if (!this.started)
+        return callback(new Error('game not started'));
 
-    // var str = new Array(b.length + 1).join('0').split();
-    for (var i = b.length - 1; i >= 0; i--) {
-        if (b[i] === '1') {
-            var comp = '1' + new Array(b.length - i).join('0');
-            
-            console.log('#streak', b, i, comp);
+    this.game.check(id, function(err, result) {
+        if (err)
+            return callback(err);
 
-            console.log(comp);
-            streak.push(parseInt(comp, 2));
+        if (result) {
+            _self.end();
         }
-    }
 
-    return streak;
-}
+        callback(null, result);
+    });
+};
 
-function getMaxVote(board, callback) {
-    var b, checked = {
-            X: 0,
-            O: 0
-        },
-        v = 0;
-    for (var cell in board) {
-        var ch = board[cell];
+OnlineGame.prototype.maxVote = function(board, callback) {
+    var b, v = 0;
+    for (var f in board) {
+        var field = board[f];
 
-        if (!ch.checked) {
-            if (ch.votes > v) {
+        if (!field.checked) {
+            if (field.votes > v) {
+                // Reset previous max vote
                 if (b) {
                     b.votes = 0;
                 }
 
-                b = ch;
-                v = b.votes;
+                b = field;
+                v = field.votes;
             } else {
-                ch.votes = 0;
-            }
-        } else {
-            checked[ch.checked] += ch.id;
-        }
-    }
-
-    var game;
-    if (b) {
-        b.checked = sign;
-        var sum = checked[b.checked] + b.id;
-        switch (sign) {
-            case 'X':
-                sign = 'O';
-                break;
-            case 'O':
-                sign = 'X';
-                break;
-            default:
-        }
-
-        for (var t in three) {
-            var check = three[t];
-            if ((sum & check) === check) {
-                console.log('game', sum, check);
-
-                game = {};
-                game.over = true;
-                game.winner = b.checked;
-                game.streak = streak(check);
-
-                break;
+                // Reset votes
+                field.votes = 0;
             }
         }
     }
+    return callback(null, b);
+};
 
-    return callback(null, game);
-}
+var onlineGame = new OnlineGame();
+var io = require('socket.io')(server);
+
+onlineGame.on('start', function(game) {
+    io.sockets.emit('start', game);
+});
+
+onlineGame.on('end', function(game) {
+    io.sockets.emit('end', game);
+});
 
 io.on('connection', function(socket) {
-    socket.emit('game', {
-        board: board
+    console.log('connection', onlineGame.game);
+
+    socket.emit('game', onlineGame.game);
+    socket.on('disconnect', function() {
+        console.log('sockect', 'disconnect');
     });
 
-    socket.on('vote', function(data) {
-        console.log(data);
+    socket.on('check', function(data) {
+        onlineGame.check(data.id, function(err, over) {
+            if (err) {
+                return console.log(err);
+            }
+                if (!over) {
+                console.log('emit', 'game');
+                io.sockets.emit('game', onlineGame.game);
+            }
+        });
 
-        board[data.id].votes++;
-        io.sockets.emit('vote', board[data.id]);
+        // game.board[data.id].votes++;
+        // io.sockets.emit('vote', game.board[data.id]);
     });
 });
 
 server.listen(8080, function() {
-    var set = 3000;
-    var timer = setInterval(function() {
-        getMaxVote(board, function(err, game) {
-            io.sockets.emit('game', {
-                board: board,
-                game: game
-            });
-            if (game) {
-                console.log(board, game);
-                board = createBoard();
-            }
-        });
-    }, set);
+    onlineGame.start();
 });
