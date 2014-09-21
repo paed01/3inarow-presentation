@@ -7,43 +7,53 @@
         <title>3 in a row</title>
     
         <!-- Bootstrap core CSS -->
-        <link rel="stylesheet" href="/styles/bootstrap.min.css">
+        <link rel="stylesheet" href="/styles/style.css" rel="stylesheet">
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href='http://fonts.googleapis.com/css?family=Roboto:700' rel='stylesheet' type='text/css'>
     </head>
     
     <body>
+<!--
+<div class="col-xs-4">
+    <a href="#" class="circle"></a>
+    <a href="#" class="cross"></a>
+</div>
+-->
         <div class="container">
             <header>3 in a row</header>
             <div class="row " rel="1">
                 <div class="col-xs-4" rel="1">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
+                    <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
                 </div>
                 <div class="col-xs-4" rel="2">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
+                    <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
                 </div>
                 <div class="col-xs-4" rel="4">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
+                    <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
                 </div>
             </div>
             <div class="row" rel="2">
                 <div class="col-xs-4" rel="8">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
+                    <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
                 </div>
                 <div class="col-xs-4" rel="16">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
+                    <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
                 </div>
                 <div class="col-xs-4" rel="32">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
+                    <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
                 </div>
             </div>
             <div class="row" rel="3">
                 <div class="col-xs-4" rel="64">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
+                    <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
                 </div>
                 <div class="col-xs-4" rel="128">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
+                    <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
                 </div>
                 <div class="col-xs-4" rel="256">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
+                    <a href="javascript:;" class="game start">
+                        <div class="gamevotes"></div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -55,49 +65,64 @@
                 var $wr = $('body');
                 var socket = io();
 
-                $wr.on('reset', 'a.btn', function(e) {
-                    $(this).attr('class', 'btn btn-default').html('[ ]');
+                $wr.on('reset', 'a.game', function(e) {
+                    $(this).attr('class', 'game start');
                 });
 
-                $wr.on('check', 'a.btn:not(.disabled)', function(e, data) {
-                    $(this).addClass('disabled').html(data.checked);
+                $wr.on('check', 'a.game:not(.disabled)', function(e, data) {
+                    var $this = $(this);
+                    if (data.checked == 'X') {
+                        $this.addClass( "cross" );
+                    } else if (data.checked == 'O') {
+                        $this.addClass( "circle" );
+                    }
+                    $this.removeClass( "start" ).addClass('disabled');
                 });
 
-                $wr.on('winner', 'a.btn', function(e, data) {
+                $wr.on('winner', 'a.game', function(e, data) {
                     var $this = $(this);
                     var id = $this.closest('.col-xs-4').attr('rel');
                     if ($.inArray(~~id, data.streak) >= 0) {
-                        $this.addClass('btn-success');
+                        $this.addClass('winner');
                     }
                     $this.addClass('disabled');
                 });
 
-                $wr.on('draw', 'a.btn', function(e, data) {
-                    $(this).addClass('btn-warning').addClass('disabled');
+                $wr.on('draw', 'a.game', function(e, data) {
+                    $(this).addClass('draw disabled');
                 });
 
                 $wr.on('start', function(e, gamedata) {
                     console.log(gamedata);
 
                     $('header').html('3 in a row - Start with ' + gamedata.sign);
-                    $('a.btn').trigger('reset');
+                    $('a.game').trigger('reset');
                 });
 
                 $wr.on('gameover', function(e, gamedata) {
                     var result = gamedata.result;
 
-                    $('a.btn').trigger('set', gamedata.board);
+                    $('a.game').trigger('set', gamedata.board);
 
                     if (result.draw) {
                         $('header').html('3 in a row - Draw');
-                        $('a.btn').trigger('draw', result);
+                        $('a.game').trigger('draw', result);
                     } else {
                         $('header').html('3 in a row - Winner ' + result.winner);
-                        $('a.btn').trigger('winner', result);
+                        $('a.game').trigger('winner', result);
                     }
                 });
 
-                $wr.on('set', 'a.btn', function(e, board) {
+                $wr.on('set', 'a .gamevotes', function(e, votes){
+                    var $this = $(this);
+                    if(votes === 0){
+                        $this.addClass('hidden');
+                    } else {
+                        $this.html(votes).removeClass('hidden');
+                    }
+                });
+
+                $wr.on('set', 'a.game', function(e, board) {
                     var $this = $(this);
                     var id = $this.closest('.col-xs-4').attr('rel');
                     var me = board[id];
@@ -105,22 +130,25 @@
                         return;
                     if (me.checked) {
                         $this.trigger('check', me);
-                    } else if (typeof me.votes === 'number') {
-                        $this.html(!me.votes  ? '[' + me.votes + ']' : me.votes);
+                        $this.find('.gamevotes').trigger('set', 0);
+                    } else {
+                        $this.find('.gamevotes').trigger('set',me.votes);
                     }
                 });
 
-                $wr.on('click', 'a.btn', function(e) {
+                $wr.on('click', 'a.game', function(e) {
                     var $this = $(this);
                     var id = $this.closest('.col-xs-4').attr('rel');
                     socket.emit('check', {
                         id: id
                     });
+
+                    $this.find('.gamevotes').css('padding','20')
                 });
 
                 socket.on('game', function(gamedata) {
                     $('header').html('3 in a row - Game on ' + gamedata.sign);
-                    $('a.btn').trigger('set', gamedata.board);
+                    $('a.game').trigger('set', gamedata.board);
                 });
 
                 socket.on('start', function(gamedata) {

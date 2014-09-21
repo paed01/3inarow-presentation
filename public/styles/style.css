@@ -1,0 +1,151 @@
+body {
+	font-family: 'Roboto';
+	font-weight: 700;
+	padding: 0;
+	margin: 0;
+}
+
+header {
+	font-size: 48px;
+	text-align: center;
+}
+
+.col-xs-4 {
+	display: inline-block;
+	margin-left: 0;
+	width: 32%;
+	position: relative;
+}
+
+.col-xs-4 a {
+	-webkit-box-shadow: inset 0px 0px 0px 5px #f4f4f4;
+	-moz-box-shadow:    inset 0px 0px 0px 5px #f4f4f4;
+	box-shadow:         inset 0px 0px 0px 5px #f4f4f4;
+	text-decoration: none;
+	display: block;
+	text-align: center;
+}
+
+.btn {
+	border-radius: 0;
+	border: none;
+	background: #FFF;
+	display: block;
+}
+
+a.cross,
+a.circle {
+
+}
+
+.gamevotes {
+	position: absolute;
+	top: 0;
+	right: 50%;
+	left: 50%;
+	background: #f4f4f4;
+	padding: 15px;
+	line-height: 0;
+	color: #888;
+	opacity: 1;
+}
+
+.cross:before,
+.circle:before,
+.start:before {
+	font-family: 'FontAwesome';
+	font-size: 48px;
+	line-height: 0;
+	height: 30px;
+	width: 30px;
+
+	display: inline-block;
+
+	height: 1em;
+	width: 1em;
+
+	padding: .618em;
+	-webkit-border-radius: 100%;
+	border-radius: 100%;
+	-moz-background-clip: padding;
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+	text-align: center;
+	margin-left: .541em;
+
+	font-weight: normal;
+	line-height: 1em;
+	width: 1em;
+	padding: .5em;
+	-moz-background-clip: padding;
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+
+/*
+
+*/
+}
+
+a.disabled {
+   pointer-events: none;
+   cursor: default;
+}
+
+.btn-default:before {
+	height: 30px;
+	width: 30px;
+	padding: 30px;
+}
+
+.start:before {
+	content: "\f096";
+	color: #f4f4f4;
+}
+
+.cross:before {
+	content: "\f00d";
+}
+
+.circle:before {
+	content: "\f10c";
+}
+
+/*
+
+.start:hover:before {
+	background: #000;
+}
+
+.cross:hover:before {
+	background: #000;
+}
+
+.circle:hover:before {
+	background: rgb(234, 103, 0);
+}
+
+*/
+
+a,
+.cross:before,
+.circle:before,
+.start:before,
+.gamevotes,
+.hidden {
+	-webkit-transition: all .3s ease-out;
+	-moz-transition: all .3s ease-out;
+	-o-transition: all .3s ease-out;
+	transition: all .3s ease-out;
+}
+
+.winner {
+	background: rgb(0, 255, 143);
+}
+
+.draw {
+	background: rgb(255, 204, 0);
+}
+
+.hidden {
+	opacity: 0;
+}
