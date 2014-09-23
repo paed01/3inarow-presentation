@@ -49,17 +49,19 @@
         </div>
         <script type="text/javascript" src="/js/jquery.min.js"></script>
         <script type="text/javascript" src="/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="/js/game.js"></script>
+        <script type="text/javascript" src="/game.js"></script>
         <script type="text/javascript">
             $(function() {
                 var $wr = $('body');
+
+                var Game = require('game');
                 var game = new Game();
 
                 $wr.on('reset', 'a.btn', function(e) {
                     $(this).attr('class', 'btn btn-default').html('[0]');
                 });
 
-                $wr.on('check', 'a.btn', function(e, data) {
+                $wr.on('check', 'a.btn:not(.disabled)', function(e, data) {
                     $(this).addClass('disabled').html(data.checked);
                 });
 
@@ -76,11 +78,11 @@
                     $(this).addClass('btn-warning').addClass('disabled');
                 });
 
-                $wr.on('start', function(e) {
-                    $('header').html('3 in a row - Start');
+                $wr.on('start', function(e, game) {
+                    $('header').html('3 in a row - Start with ' + game.sign);
                     $('a.btn').trigger('reset');
                 });
- 
+
                 $wr.on('gameover', function(e, gamedata) {
                     var result = gamedata.result;
 
@@ -96,7 +98,7 @@
                 });
 
                 game.start('X', function() {
-                    $wr.trigger('start');
+                    $wr.trigger('start', game);
                 });
 
                 $wr.on('click', 'a.btn', function(e) {
@@ -106,12 +108,12 @@
 
                         $this.trigger('check', game.board[id]);
                         if (over) {
-                            $wr.trigger('gameover', over);
+                            $wr.trigger('gameover', game);
 
                             // Restart game after some time
                             setTimeout(function() {
                                 game.start(game.sign, function() {
-                                    $wr.trigger('start');
+                                    $wr.trigger('start', game);
                                 });
                             }, 3000);
                         }

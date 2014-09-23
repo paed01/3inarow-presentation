@@ -12,6 +12,75 @@ Diversify presentation of node.js and socket.io
 6. Run: `npm install`
 7. Start server with: `node index.js`
 
+# Presentation
+
+## The server
+The client in this case is the browser. The server is a http server hosted in node:
+
+```javascript
+
+var http = require('http');
+http.createServer(function(req, res){
+    res.end('Under construction')    
+});
+
+server.listen(8080);
+
+```
+
+When browsing to http://localhost:8080 you will end up with the text `Under construction`.
+
+To serve the files we need to alter the "handler", i.e. the function argument in `http.createServer`
+
+```javascript
+
+var http = require('http');
+var fs = require('fs');
+
+http.createServer(function(req, res) {
+    var filereader = fs.createReadStream('./public/index.html');
+    filereader.pipe(res);
+});
+
+server.listen(8080);
+
+```
+
+The client side javascripts also needs to be passed from the server to the client. The first argument in the "handler" is the request coming from the client. The request have a property called url that we can use to route to the proper file:
+
+```javascript
+
+var http = require('http');
+var fs = require('fs');
+
+http.createServer(function(req, res) {
+    // Root
+    if (req.url == '/') {
+        var filereader = fs.createReadStream('./public/index.html');
+        filereader.pipe(res);
+    } else if (req.url.indexOf('/js/') === 0) {
+        // Build path
+        var file = __dirname + '/public' + req.url;
+
+        fs.fileExists(file, function(err, exists) {
+            if (!exists) {
+                res.writeHead(404, req.url + 'not found');
+                return res.end();
+            }
+
+            var filereader = fs.createReadStream(file);
+            response.writeHead(200, {
+                'Content-Type': 'application/javascript'
+            });
+            filereader.pipe(res);
+        });
+    }
+});
+
+server.listen(8080);
+```
+
+
 # The game
 
 ## Board
@@ -37,7 +106,7 @@ The sum of the winning streaks are calculated by the sum of the ids, e.g.:
 |**Sum**  |      |       |       |  *273*|
 
 
-## Determine winner
+### Determine the winner
 The diagonal from top left to bottom right sums up to *273*.
 
 ```javascript
@@ -55,6 +124,34 @@ if ((sumX & 273) === 273) {
 
 ```
 
+Or more likely:
+
+```javascript
+var streaks = [7, 56, 73, 84, 146, 273, 292, 448];
+
+// The participant signs (X, O) have there own sum of ids
+var sumX = (1 + 16 + 64 + 256);
+var sumO = (2 + 4 + 128);
+
+// The sum is bit-compared with the streak sums
+for (var i in streaks) {
+    var streak = streaks[i];
+    if ((sumX & streak) === streak) {
+        console.log('X wins');
+        break;
+    } else if ((sumO & streak) === streak) {
+        console.log('O rules!');
+        break;
+    ) else if (sumX + sumO === 511) {
+        console.log('It\'s a draw!');
+        break;
+    }
+}
+
+
+```
+
+
 A draw is calculated from the sum of all checked ids, *511*.
 
 |         | Col 1| Col 2 | Col 3 |
@@ -62,7 +159,6 @@ A draw is calculated from the sum of all checked ids, *511*.
 |**Row 1**|   `X`|    `O`|    `O`|
 |**Row 2**|   `O`|    `X`|    `X`|
 |**Row 3**|   `X`|    `O`|    `O`|
-
 
 # Notes
 
