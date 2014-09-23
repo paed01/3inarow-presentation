@@ -1,13 +1,15 @@
-Step 1
+Step 1 - The basics
 ========
 
-- [File structure](file-structure)
+- [File structure](#file-structure)
 - [Create a http-server with node.js](#the-server)
 - [html](#html)
 - [JavaScript (CommonJS)](#javascript-commonjs)
 - [Styles, fonts, less and scss](#styles-fonts-less-and-scss)
 
 ## File structure
+We start with a number of files that will represent a web-page.
+
 - public
     - fonts
     - js
