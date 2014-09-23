@@ -1,5 +1,6 @@
 var http = require('http');
 var fs = require('fs');
+var url = require('url');
 
 var Browserify = require('browserify');
 
@@ -19,8 +20,10 @@ var server = http.createServer(function(req, res) {
         });
         browserify.bundle().pipe(res);
     } else {
-        return fs.readFile(__dirname + '/public' + req.url, function(err, content) {
+        var reqUrl = url.parse(req.url);
+        return fs.readFile(__dirname + '/public' + reqUrl.pathname, function(err, content) {
             if (err) {
+                console.log(err, reqUrl);
                 res.writeHead(404);
                 return res.end(err.message);
             }
@@ -50,13 +53,7 @@ onlineGame.on('game', function(game) {
 });
 
 io.on('connection', function(socket) {
-    console.log('connection', onlineGame.game);
-
     socket.emit('game', onlineGame.game);
-    socket.on('disconnect', function() {
-        console.log('sockect', 'disconnect');
-    });
-
     socket.on('check', function(data) {
         onlineGame.vote(data.id);
     });

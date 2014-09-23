@@ -3,6 +3,11 @@
 
 Diversify presentation of node.js and socket.io
 
+## Table of Contents
+
+- [Presentation](/docs/Presentation.md)
+
+
 ## Install
 1. Install [git](http://git-scm.com/downloads)
 2. Install [node and npm](http://nodejs.org) 
@@ -11,8 +16,6 @@ Diversify presentation of node.js and socket.io
 5. Run: `cd 3inarow-presentation`
 6. Run: `npm install`
 7. Start server with: `node index.js`
-
-# Presentation
 
 ## The server
 The client in this case is the browser. The server is a http server hosted in node:

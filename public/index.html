@@ -8,15 +8,16 @@
     
         <!-- Bootstrap core CSS -->
         <link rel="stylesheet" href="/styles/style.css" rel="stylesheet">
-        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-        <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:700' rel='stylesheet' type='text/css'>
+        <link href="/styles/font-awesome.min.css" rel="stylesheet">
+        <link href="/styles/roboto.css" rel='stylesheet' type='text/css'>
     </head>
     
     <body>
 
-                <header>
-                    3 in a row
-                </header>
+        <header>
+            <h1 class="title">3 in a row</h1>
+            <h2 class="capture"></h1>
+        </header>
 
         <article rel="1">
             <div class="col4 push0" rel="1">
@@ -65,6 +66,8 @@
 
                 var $wr = $('body');
                 var socket = io();
+
+
 
                 $wr.on('reset', 'a.game', function(e) {
                     $(this).attr('class', 'game start');
@@ -148,7 +151,7 @@
                 });
 
                 socket.on('game', function(gamedata) {
-                    $('header').html('3 in a row - Game on ' + gamedata.sign);
+                    $('.capture').html('3 in a row - Game on ' + gamedata.sign);
                     $('a.game').trigger('set', gamedata.board);
                 });
 
