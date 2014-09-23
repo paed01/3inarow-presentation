@@ -5,8 +5,12 @@ Diversify presentation of node.js and socket.io
 
 ## Table of Contents
 
-- [Presentation](/docs/Presentation.md)
-
+- Presentation
+    - [Step 1 - The http server](/docs/Step1.md)
+    - [Step 2 - The game](/docs/Step2.md)
+    - [Step 3 - Serverside game](/docs/Step3.md)
+- [Install](#install)
+- [The game](#the-game)
 
 ## Install
 1. Install [git](http://git-scm.com/downloads)
