@@ -23,7 +23,6 @@ var server = http.createServer(function(req, res) {
         var reqUrl = url.parse(req.url);
         return fs.readFile(__dirname + '/public' + reqUrl.pathname, function(err, content) {
             if (err) {
-                console.log(err, reqUrl);
                 res.writeHead(404);
                 return res.end(err.message);
             }

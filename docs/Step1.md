@@ -70,3 +70,58 @@ http.createServer(function(req, res) {
 
 server.listen(8080);
 ```
+
+Since one of us hava smaller brother that is an Art Director the brother was forced to do the design. The problem is that Art Directors use a lot of css, we meen a lot! So the next step is to impmlement serving styles, fonts, less and scss(?).
+
+But since this is a node.js solution this poses no threat:
+
+```javascript
+
+var http = require('http');
+var fs = require('fs');
+var url = require('url');
+
+http.createServer(function(req, res) {
+    // Root
+    if (req.url == '/') {
+        var filereader = fs.createReadStream('./public/index.html');
+        filereader.pipe(res);
+    } else if (req.url.indexOf('/js/') === 0) {
+        var file = __dirname + '/public' + req.url;
+
+        fs.fileExists(file, function(err, exists) {
+            if (!exists) {
+                res.writeHead(404, req.url + 'not found');
+                return res.end();
+            }
+
+            var filereader = fs.createReadStream(file);
+            response.writeHead(200, {
+                'Content-Type': 'application/javascript'
+            });
+            filereader.pipe(res);
+        });
+    } else { // Serve all other files found in public
+        var reqUrl = url.parse(req.url);
+        var file = __dirname + '/public' + reqUrl.pathname;
+
+        fs.fileExists(file, function(err, exists) {
+            if (!exists) {
+                res.writeHead(404, req.url + 'not found');
+                return res.end();
+            }
+
+            var filereader = fs.createReadStream(file);
+            response.writeHead(200);
+            filereader.pipe(res);
+        });
+    }
+});
+
+server.listen(8080);
+```
+
+
+
+
+
