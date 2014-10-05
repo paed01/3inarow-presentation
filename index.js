@@ -1,6 +1,7 @@
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
+var port = process.env.PORT || 8080
 
 var Browserify = require('browserify');
 
@@ -63,6 +64,7 @@ io.on('connection', function(socket) {
     });
 });
 
-server.listen(8080, function() {
+server.listen(port, function() {
     onlineGame.start();
+    console.log("Static file server running at\n  => http://localhost:" + port + "/\nCTRL + C to shutdown");
 });
