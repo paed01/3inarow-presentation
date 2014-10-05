@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -7,48 +6,55 @@
         <title>3 in a row</title>
     
         <!-- Bootstrap core CSS -->
-        <link rel="stylesheet" href="/styles/bootstrap.min.css">
+        <link rel="stylesheet" href="/styles/style.css" rel="stylesheet">
+        <link href="/styles/font-awesome.min.css" rel="stylesheet">
+        <link href="/styles/roboto.css" rel='stylesheet' type='text/css'>
     </head>
     
     <body>
-        <div class="container">
-            <header>3 in a row</header>
-            <div class="row " rel="1">
-                <div class="col-xs-4" rel="1">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
-                </div>
-                <div class="col-xs-4" rel="2">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
-                </div>
-                <div class="col-xs-4" rel="4">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
-                </div>
+
+        <header>
+            <h1 class="title">3 in a row</h1>
+            <h2 class="capture"></h1>
+        </header>
+
+        <article rel="1">
+            <div class="col4 push0" rel="1">
+                <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
             </div>
-            <div class="row" rel="2">
-                <div class="col-xs-4" rel="8">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
-                </div>
-                <div class="col-xs-4" rel="16">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
-                </div>
-                <div class="col-xs-4" rel="32">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
-                </div>
+            <div class="col4 push4" rel="2">
+                <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
             </div>
-            <div class="row" rel="3">
-                <div class="col-xs-4" rel="64">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
-                </div>
-                <div class="col-xs-4" rel="128">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
-                </div>
-                <div class="col-xs-4" rel="256">
-                    <a href="javascript:;" class="btn btn-default">[ ]</a>
-                </div>
+            <div class="col4 push8" rel="4">
+                <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
             </div>
-        </div>
+        </article>
+
+        <article rel="2">
+            <div class="col4 push0" rel="8">
+                <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
+            </div>
+            <div class="col4 push4" rel="16">
+                <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
+            </div>
+            <div class="col4 push8" rel="32">
+                <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
+            </div>
+        </article>
+
+        <article rel="3">
+            <div class="col4 push0" rel="64">
+                <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
+            </div>
+            <div class="col4 push4" rel="128">
+                <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
+            </div>
+            <div class="col4 push8" rel="256">
+                <a href="javascript:;" class="game start"><div class="gamevotes"></div></a>
+            </div>
+        </article>
+
         <script type="text/javascript" src="/js/jquery.min.js"></script>
-        <script type="text/javascript" src="/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/game.js"></script>
         <script type="text/javascript">
             $(function() {
@@ -57,43 +63,45 @@
                 var Game = require('game');
                 var game = new Game();
 
-                $wr.on('reset', 'a.btn', function(e) {
-                    $(this).attr('class', 'btn btn-default').html('[0]');
+                $wr.on('reset', 'a.game', function(e) {
+                    $(this).attr('class', 'game start');
                 });
 
-                $wr.on('check', 'a.btn:not(.disabled)', function(e, data) {
-                    $(this).addClass('disabled').html(data.checked);
-                });
-
-                $wr.on('winner', 'a.btn', function(e, data) {
+                $wr.on('check', 'a.game:not(.disabled)', function(e, data) {
                     var $this = $(this);
-                    var id = $this.closest('.col-xs-4').attr('rel');
-                    if ($.inArray(~~id, data.streak) >= 0) {
-                        $this.addClass('btn-success');
+                    if (data.sign == 'X') {
+                        $this.addClass( "cross" );
+                    } else if (data.sign == 'O') {
+                        $this.addClass( "circle" );
+                    }
+                    $this.removeClass('start').addClass('disabled');
+                });
+
+                $wr.on('winner', 'a.game', function(e, data) {
+                    var $this = $(this);
+                    var id = $this.closest('.col4').attr('rel');
+                    if(game.inStreak(id, data.streak)) {
+                        $this.addClass('winner');
                     }
                     $this.addClass('disabled');
                 });
 
-                $wr.on('draw', 'a.btn', function(e, data) {
-                    $(this).addClass('btn-warning').addClass('disabled');
+                $wr.on('draw', 'a.game', function(e, data) {
+                    $(this).addClass('draw disabled');
                 });
 
                 $wr.on('start', function(e, game) {
                     $('header').html('3 in a row - Start with ' + game.sign);
-                    $('a.btn').trigger('reset');
+                    $('a.game').trigger('reset');
                 });
 
-                $wr.on('gameover', function(e, gamedata) {
-                    var result = gamedata.result;
-
-                    $('a.btn').trigger('set', gamedata.board);
-
+                $wr.on('gameover', function(e, result) {
                     if (result.draw) {
                         $('header').html('3 in a row - Draw');
-                        $('a.btn').trigger('draw', result);
+                        $('a.game').trigger('draw', result);
                     } else {
                         $('header').html('3 in a row - Winner ' + result.winner);
-                        $('a.btn').trigger('winner', result);
+                        $('a.game').trigger('winner', result);
                     }
                 });
 
@@ -101,14 +109,15 @@
                     $wr.trigger('start', game);
                 });
 
-                $wr.on('click', 'a.btn', function(e) {
+                $wr.on('click', 'a.game', function(e) {
                     var $this = $(this);
-                    var id = $this.closest('.col-xs-4').attr('rel');
-                    game.check(id, function(err, over) {
+                    var id = $this.closest('.col4').attr('rel');
+                    game.check(id, function(err, data) {
 
-                        $this.trigger('check', game.board[id]);
-                        if (over) {
-                            $wr.trigger('gameover', game);
+                        $this.trigger('check', data);
+
+                        if (data.streak || data.draw) {
+                            $wr.trigger('gameover', data);
 
                             // Restart game after some time
                             setTimeout(function() {

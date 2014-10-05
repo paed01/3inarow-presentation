@@ -32,7 +32,7 @@ var server = http.createServer(function(req, res) {
 
 });
 
-var onlineGame = new OnlineGame();
+var onlineGame = new OnlineGame({ timeout : 5000 });
 var io = require('socket.io')(server);
 
 onlineGame.on('start', function(game) {
@@ -47,12 +47,17 @@ onlineGame.on('vote', function(field) {
     io.sockets.emit('vote', field);
 });
 
-onlineGame.on('game', function(game) {
-    io.sockets.emit('game', game);
+onlineGame.on('check', function(game) {
+    io.sockets.emit('game', {
+        game: onlineGame.game
+    });
 });
 
 io.on('connection', function(socket) {
-    socket.emit('game', onlineGame.game);
+    socket.emit('game', {
+        game: onlineGame.game,
+        votes: onlineGame.votes
+    });
     socket.on('check', function(data) {
         onlineGame.vote(data.id);
     });

@@ -3,7 +3,7 @@ Step 1 - The basics
 
 - [File structure](#file-structure)
 - [Create a http-server with node.js](#the-server)
-- [html](#html)
+- [The html](#the-html)
 - [JavaScript (CommonJS)](#javascript-commonjs)
 - [Styles, fonts, less and scss](#styles-fonts-less-and-scss)
 
@@ -13,6 +13,7 @@ We start with a number of files that will represent a web-page.
 - public
     - fonts
     - js
+        - `game.js`
     - less
     - scss
     - styles
@@ -35,7 +36,7 @@ server.listen(8080);
 
 When browsing to http://localhost:8080 you will end up with the text `Under construction`.
 
-## Serve html
+## The html
 
 To serve the files we need to alter the "handler", i.e. the function argument in `http.createServer`
 
@@ -91,7 +92,7 @@ server.listen(8080);
 
 ## Styles, fonts, less and scss
 
-Since one of us have smaller brother that is an Art Director the brother was forced to do the design. The problem is that Art Directors use a lot of css-magic, we meen a lot! So the next step is to make the server serve styles, fonts, less and scss(?).
+Since one of us have smaller brother that is an Art Director the brother was forced to do the design. The problem is that Art Directors use a lot of css-magic, we mean a lot! Thank you Martin. So the next step is to make the server serve styles, fonts, less and scss(?).
 
 But since this is a node.js solution this is a minor modification:
 
@@ -141,4 +142,4 @@ http.createServer(function(req, res) {
 server.listen(8080);
 ```
 
-We use the module `url` to parse the request url since styles tend to use querystring parameters when fetching other styles.
+We added a new module `url`. It is used to parse the request url since styles tend to use querystring parameters when fetching other styles. The querystrings are ignored.

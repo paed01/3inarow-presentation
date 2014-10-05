@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=0, user-scalable=0"/>
         <!-- <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png"> -->
 
         <title>3 in a row</title>
@@ -16,7 +17,7 @@
 
         <header>
             <h1 class="title">3 in a row</h1>
-            <h2 class="capture"></h1>
+            <h2 class="capture"></h2>
         </header>
 
         <article rel="1">
@@ -55,135 +56,9 @@
             </div>
         </article>
 
-
-
         <script type="text/javascript" src="/js/jquery.min.js"></script>
-        <script type="text/javascript" src="/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/socket.io/socket.io.js"></script>
-        <script type="text/javascript">
-
-            $(function() {
-
-                var $wr = $('body');
-                var socket = io();
-
-
-
-                $wr.on('reset', 'a.game', function(e) {
-                    $(this).attr('class', 'game start');
-                });
-
-                $wr.on('check', 'a.game:not(.disabled)', function(e, data) {
-                    var $this = $(this);
-                    if (data.checked == 'X') {
-                        $this.addClass( "cross" );
-                    } else if (data.checked == 'O') {
-                        $this.addClass( "circle" );
-                    }
-                    $this.removeClass( "start" ).addClass('disabled');
-                });
-
-                $wr.on('winner', 'a.game', function(e, data) {
-                    var $this = $(this);
-                    var id = $this.closest('.col4').attr('rel');
-                    if ($.inArray(~~id, data.streak) >= 0) {
-                        $this.addClass('winner');
-                    }
-                    $this.addClass('disabled');
-                });
-
-                $wr.on('draw', 'a.game', function(e, data) {
-                    $(this).addClass('draw disabled');
-                });
-
-                $wr.on('start', function(e, gamedata) {
-                    console.log(gamedata);
-
-                    $('header').html('3 in a row - Start with ' + gamedata.sign);
-                    $('a.game').trigger('reset');
-                });
-
-                $wr.on('gameover', function(e, gamedata) {
-                    var result = gamedata.result;
-
-                    $('a.game').trigger('set', gamedata.board);
-
-                    if (result.draw) {
-                        $('header').html('3 in a row - Draw');
-                        $('a.game').trigger('draw', result);
-                    } else {
-                        $('header').html('3 in a row - Winner ' + result.winner);
-                        $('a.game').trigger('winner', result);
-                    }
-                });
-
-                $wr.on('set', 'a .gamevotes', function(e, votes){
-                    var $this = $(this);
-                    if(votes === 0){
-                        $this.addClass('hidden');
-                    } else {
-                        $this.html(votes).removeClass('hidden');
-                    }
-                });
-
-                $wr.on('set', 'a.game', function(e, board) {
-                    var $this = $(this);
-                    var id = $this.closest('.col4').attr('rel');
-                    var me = board[id];
-                    if (!me)
-                        return;
-                    if (me.checked) {
-                        $this.trigger('check', me);
-                        $this.find('.gamevotes').trigger('set', 0);
-                    } else {
-                        $this.find('.gamevotes').trigger('set',me.votes);
-                    }
-                });
-
-                $wr.on('click', 'a.game', function(e) {
-                    var $this = $(this);
-                    var id = $this.closest('.col4').attr('rel');
-                    socket.emit('check', {
-                        id: id
-                    });
-
-                    $this.find('.gamevotes').css('padding','20')
-                });
-
-                socket.on('game', function(gamedata) {
-                    $('.capture').html('3 in a row - Game on ' + gamedata.sign);
-                    $('a.game').trigger('set', gamedata.board);
-                });
-
-                socket.on('start', function(gamedata) {
-                    $wr.trigger('start', gamedata);
-                });
-
-                socket.on('end', function(gamedata) {
-                    $wr.trigger('gameover', gamedata);
-                });
-
-                socket.on('vote', function(field) {
-                    var board = {};
-                    board[field.id] = field;
-                    $('.col4[rel=' + field.id + '] a').trigger('set', board);
-                });
-
-                /*
-                function squeeze() {
-                    var W = $(window).width()/3,
-                        H = $(window).height()/4;
-
-                    $('.col4 a').css('height',H);
-                    //$('.col-xs-4 a').css('width',W);
-
-                    console.log(W);
-                    console.log(H);
-                }
-                $(window).bind('resize', function() { squeeze(); });
-                */
-            });
-         
-        </script>
+        <script type="text/javascript" src="/game.js"></script>
+        <script type="text/javascript" src="/js/main.js"></script>
     </body>
 </html>

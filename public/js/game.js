@@ -21,7 +21,7 @@ Game.prototype.start = function(sign, callback) {
         X: 0,
         O: 0
     };
-    this.result = null;
+    delete this.result;
     if (typeof callback === 'function') {
         callback(null, this.board);
     }
@@ -37,6 +37,10 @@ Game.prototype.streak = function(checksum) {
         }
     }
     return streak;
+};
+
+Game.prototype.inStreak = function(id, checksum) {
+    return (id & checksum) === checksum;
 };
 
 Game.prototype.check = function(id, callback) {
@@ -64,12 +68,12 @@ Game.prototype.check = function(id, callback) {
     }
 
     // Check winning streak
-    for (var t in three) {
-        var check = three[t];
-        if ((sum & check) === check) {
+    for (var t in winningStreaks) {
+        var streak = winningStreaks[t];
+        if ((sum & streak) === streak) {
             game = {};
             game.winner = b.checked;
-            game.streak = this.streak(check);
+            game.streak = streak;
 
             break;
         }
@@ -80,7 +84,7 @@ Game.prototype.check = function(id, callback) {
         game = {};
         game.draw = true;
     }
-    
+
     this.result = game;
 
     return callback(null, game);
