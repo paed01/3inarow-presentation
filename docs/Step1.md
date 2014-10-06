@@ -26,7 +26,7 @@ The client in this case is the browser. The server is a http server hosted in no
 ```javascript
 
 var http = require('http');
-http.createServer(function(req, res){
+var server = http.createServer(function(req, res){
     res.end('Under construction')    
 });
 
@@ -45,7 +45,7 @@ To serve the files we need to alter the "handler", i.e. the function argument in
 var http = require('http');
 var fs = require('fs');
 
-http.createServer(function(req, res) {
+var server = http.createServer(function(req, res) {
     var filereader = fs.createReadStream('./public/index.html');
     filereader.pipe(res);
 });
@@ -63,7 +63,7 @@ The client side javascripts also needs to be passed from the server to the clien
 var http = require('http');
 var fs = require('fs');
 
-http.createServer(function(req, res) {
+var server = http.createServer(function(req, res) {
     // Root
     if (req.url == '/') {
         var filereader = fs.createReadStream('./public/index.html');
@@ -102,7 +102,7 @@ var http = require('http');
 var fs = require('fs');
 var url = require('url');
 
-http.createServer(function(req, res) {
+var server = http.createServer(function(req, res) {
     // Root
     if (req.url == '/') {
         var filereader = fs.createReadStream('./public/index.html');
