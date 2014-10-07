@@ -33,7 +33,7 @@ var server = http.createServer(function(req, res) {
 
 });
 
-var onlineGame = new OnlineGame({ timeout : 5000 });
+var onlineGame = new OnlineGame({ timeout : 3000 });
 var io = require('socket.io')(server);
 
 onlineGame.on('start', function(game) {

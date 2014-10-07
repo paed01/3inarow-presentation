@@ -1,22 +1,10 @@
-var three = [7, 56, 73, 84, 146, 273, 292, 448];
+var winningStreaks = [7, 56, 73, 84, 146, 273, 292, 448];
 var draw = parseInt('111111111', 2);
 
-Game = function() {};
-
-Game.prototype.createBoard = function() {
-    var board = {};
-    for (var i = 1; i < 257; i *= 2) {
-        board[i] = {
-            id: i
-        };
-    }
-
-    return board;
-};
+var Game = function() {};
 
 Game.prototype.start = function(sign, callback) {
     this.sign = sign || 'X';
-    this.board = this.createBoard();
     this.checked = {
         X: 0,
         O: 0
@@ -40,7 +28,8 @@ Game.prototype.streak = function(checksum) {
 };
 
 Game.prototype.inStreak = function(id, checksum) {
-    return (id & checksum) === checksum;
+    var testsum = ~~checksum;
+    return ((~~id) | testsum) === testsum;
 };
 
 Game.prototype.check = function(id, callback) {
@@ -48,15 +37,40 @@ Game.prototype.check = function(id, callback) {
         return callback(new Error('Game over'));
     }
 
-    var game;
-    var b = this.board[id];
-    if (!b) {
-        callback(null);
+    // If already checked - ignore
+    var sum = this.checked[this.sign];
+    if ((sum | id) === sum) {
+        return callback(null);
     }
 
-    b.checked = this.sign;
+    var data = {
+        id: id,
+        sign: this.sign
+    };
 
-    var sum = this.checked[b.checked] = this.checked[b.checked] + b.id;
+    // Set new sum  
+    this.checked[this.sign] = sum = sum | id;
+
+    // Check winning streak
+    for (var t in winningStreaks) {
+        var streak = winningStreaks[t];
+        if ((sum & streak) === streak) {
+            data.winner = this.sign;
+            data.streak = streak;
+            break;
+        }
+    }
+
+    // Check if draw
+    if (this.checked.X + this.checked.O === draw) {
+        data.draw = true;
+    }
+
+    if (data.winner || data.draw) {
+        this.result = data;
+    }
+
+    // Switch sign
     switch (this.sign) {
         case 'X':
             this.sign = 'O';
@@ -67,25 +81,5 @@ Game.prototype.check = function(id, callback) {
         default:
     }
 
-    // Check winning streak
-    for (var t in winningStreaks) {
-        var streak = winningStreaks[t];
-        if ((sum & streak) === streak) {
-            game = {};
-            game.winner = b.checked;
-            game.streak = streak;
-
-            break;
-        }
-    }
-
-    // Check if draw
-    if (!game && this.checked.X + this.checked.O === draw) {
-        game = {};
-        game.draw = true;
-    }
-
-    this.result = game;
-
-    return callback(null, game);
+    return callback(null, data);
 };
