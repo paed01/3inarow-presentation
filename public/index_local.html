@@ -55,12 +55,11 @@
         </article>
 
         <script type="text/javascript" src="/js/jquery.min.js"></script>
-        <script type="text/javascript" src="/game.js"></script>
+        <script type="text/javascript" src="/js/game.js"></script>
         <script type="text/javascript">
             $(function() {
                 var $wr = $('body');
 
-                var Game = require('game');
                 var game = new Game();
 
                 $wr.on('reset', 'a.game', function(e) {
