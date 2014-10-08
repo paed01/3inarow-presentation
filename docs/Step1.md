@@ -1,4 +1,4 @@
-Step 1 - The basics
+Step 1 - The http server
 ========
 
 - [File structure](#file-structure)
@@ -143,3 +143,5 @@ server.listen(8080);
 ```
 
 We added a new module `url`. It is used to parse the request url since styles tend to use querystring parameters when fetching other styles. The querystrings are ignored.
+
+[Next >>](/docs/Step2.md)
