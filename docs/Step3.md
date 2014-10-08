@@ -13,11 +13,11 @@ Make the game serverside.
 
 To make the game a serverside game we can use the same CommonJS client side JavaScript for the game logic. The only thing we have to do is to make a node.js module out of `game.js`.
 
-As a common practice node.js modules are stored in the sub-directory `/lib`. So we will make a copy of (game.js)[/public/js/game.js] in the lib-folder.
+As a common practice node.js modules are stored in the sub-directory `/lib`. So we will make a copy of [game.js](/public/js/game.js) in the lib-folder.
 
 Exposing a module is done by setting the `module.exports` statement to the constructor function.
 
-Open (`/lib/game.js`)[/lib/game.js] and modify it accordingly:
+Open [`/lib/game.js`](/lib/game.js) and modify it accordingly:
 
 ```javascript
 var winningStreaks = [7, 56, 73, 84, 146, 273, 292, 448];
