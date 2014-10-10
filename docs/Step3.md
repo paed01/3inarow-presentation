@@ -5,7 +5,7 @@ Make the game serverside.
 
 - [Game module](#game-module)
    - [Browserify](#browserify)
-   - [Modify inline html](#browserify)
+   - [Modify client side script](#modify-client-side-script)
 - [Determining the winner](#determining-the-winner)
 - [Draw](#draw)
 
@@ -44,7 +44,7 @@ Game.prototype.start = function(sign, callback) {
 // and more...
 ```
 
-## Browserify
+### Browserify
 
 To use the new modulerized game-sqript in frontend we must tell the client that there is a methods called `require`, `export` and `module.exports`. Fortunatelly there is a npm-module that can help us with this. Start by installing the `browserify` module with npm.
 
@@ -60,14 +60,15 @@ var url = require('url');
 
 // Use the newly installed module
 var Browserify = require('browserify');
+// New instance of module
+var browserify = Browserify();
 
 var server = http.createServer(function(req, res) {
     // Root
     if (req.url == '/') {
         var filereader = fs.createReadStream('./public/index.html');
         filereader.pipe(res);
-    } else if (req.url == '/js/game.js') {
-        var browserify = Browserify();
+    } else if (req.url == '/js/game.js') { // Override requests for game.js
         browserify.require('./lib/game.js', {
             expose: 'game'
         });
@@ -105,4 +106,23 @@ var server = http.createServer(function(req, res) {
 });
 
 server.listen(8080);
+```
+
+### Modify client side script
+
+For the script to function client side the "module" needs to be addressed.
+
+```html
+<script type="text/javascript">
+    $(function() {
+        var $wr = $('body');
+
+        // Load browserified module
+        var Game = require('game');
+        var game = new Game();
+
+        $wr.on('reset', 'a.game', function(e) {
+            $(this).attr('class', 'game start');
+        });
+
 ```
