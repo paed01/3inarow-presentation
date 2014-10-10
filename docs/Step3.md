@@ -45,3 +45,64 @@ Game.prototype.start = function(sign, callback) {
 ```
 
 ## Browserify
+
+To use the new modulerized game-sqript in frontend we must tell the client that there is a methods called `require`, `export` and `module.exports`. Fortunatelly there is a npm-module that can help us with this. Start by installing the `browserify` module with npm.
+
+`npm install browserify`
+
+Expose the game-module from the http-request-handler
+
+```javascript
+
+var http = require('http');
+var fs = require('fs');
+var url = require('url');
+
+// Use the newly installed module
+var Browserify = require('browserify');
+
+var server = http.createServer(function(req, res) {
+    // Root
+    if (req.url == '/') {
+        var filereader = fs.createReadStream('./public/index.html');
+        filereader.pipe(res);
+    } else if (req.url == '/js/game.js') {
+        var browserify = Browserify();
+        browserify.require('./lib/game.js', {
+            expose: 'game'
+        });
+        browserify.bundle().pipe(res);
+    } else if (req.url.indexOf('/js/') === 0) {
+        var file = __dirname + '/public' + req.url;
+
+        fs.fileExists(file, function(err, exists) {
+            if (!exists) {
+                res.writeHead(404, req.url + 'not found');
+                return res.end();
+            }
+
+            var filereader = fs.createReadStream(file);
+            response.writeHead(200, {
+                'Content-Type': 'application/javascript'
+            });
+            filereader.pipe(res);
+        });
+    } else { // Serve all other files found in public
+        var reqUrl = url.parse(req.url);
+        var file = __dirname + '/public' + reqUrl.pathname;
+
+        fs.fileExists(file, function(err, exists) {
+            if (!exists) {
+                res.writeHead(404, req.url + 'not found');
+                return res.end();
+            }
+
+            var filereader = fs.createReadStream(file);
+            response.writeHead(200);
+            filereader.pipe(res);
+        });
+    }
+});
+
+server.listen(8080);
+```
