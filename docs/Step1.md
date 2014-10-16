@@ -21,6 +21,7 @@ We start with a number of files that will represent a web-page.
 - `index.js`
 
 ## The server
+
 The client in this case is the browser. The server is a http server hosted in node:
 
 ```javascript
@@ -33,6 +34,10 @@ var server = http.createServer(function(req, res){
 server.listen(8080);
 
 ```
+
+Save the file in e.g. `demo.js`. Start the server by opening Git Bash and type:
+
+`node demo.js`
 
 When browsing to http://localhost:8080 you will end up with the text `Under construction`.
 
