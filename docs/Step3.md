@@ -250,7 +250,7 @@ Since the communication is two-ways the client-server communication could also b
                 }
             });
 
-            // Emit event on socket to send server a message with wich button was clicked
+            // Emit event on socket to send server a message with what button was clicked
             io.emit('check', {
                 id : id
             });
