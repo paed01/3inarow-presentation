@@ -7,8 +7,8 @@ Make the game serverside.
    - [Browserify](#browserify)
    - [Modify client side script](#modify-client-side-script)
 - [Client-server communication](#client-server-communication)
-   - [Server socket.io](#server-socket-io)
-   - [Client socket.io](#client-socket-io)
+   - [Server socket.io](#server-socketio)
+   - [Client socket.io](#client-socketio)
 
 ## Game module
 
@@ -222,7 +222,7 @@ Since the communication is two-ways the client-server communication could also b
 
         // Listen for hello-event
         socket.on('hello', function(data){
-            cosole.log('hello', 'and', data.and.name);
+            console.log('hello', 'and', data.and.name);
         });
 
         $wr.on('reset', 'a.game', function(e) {

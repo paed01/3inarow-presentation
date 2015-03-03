@@ -1,9 +1,9 @@
-/*jslint expr:true es5:true */
-
+/*jslint */
+var Code = require('code');
 var Lab = require('lab');
 var lab = exports.lab = Lab.script();
+var expect = Code.expect;
 
-var expect = Lab.expect;
 var before = lab.before;
 var after = lab.after;
 var describe = lab.experiment;
@@ -15,12 +15,12 @@ describe('game', function() {
     describe('#inStreak', function() {
         var game = new Game();
         it('returns true if id is string and in streak', function(done) {
-            expect(game.inStreak('1', 7)).to.be.ok;
+            expect(game.inStreak('1', 7)).to.be.true();
             done();
         });
 
         it('returns true if id is numeric and streak is string', function(done) {
-            expect(game.inStreak(4, '7')).to.be.ok;
+            expect(game.inStreak(4, '7')).to.be.true();
             done();
         });
     });
@@ -39,8 +39,8 @@ describe('game', function() {
 
             game.start('X', function(){
                 game.check(256, function(err, result){
-                    expect(err).to.not.exist;
-                    expect(result).to.exist;
+                    expect(err).to.not.exist();
+                    expect(result).to.exist();
                     done();
                 });
             });
@@ -54,9 +54,9 @@ describe('game', function() {
                 game.checked.O = 73 + 146;
 
                 game.check(256, function(err, result){
-                    expect(err).to.not.exist;
-                    expect(result.winner).to.exist;
-                    expect(result.winner).to.eql('X');
+                    expect(err).to.not.exist();
+                    expect(result.winner).to.exist();
+                    expect(result.winner).to.equal('X');
                     done();
                 });
             });
@@ -70,9 +70,9 @@ describe('game', function() {
                 game.checked.O = 64 + 128;
 
                 game.check(256, function(err, result){
-                    expect(err).to.not.exist;
-                    expect(result.winner).to.exist;
-                    expect(result.winner).to.eql('O');
+                    expect(err).to.not.exist();
+                    expect(result.winner).to.exist();
+                    expect(result.winner).to.equal('O');
                     done();
                 });
             });
