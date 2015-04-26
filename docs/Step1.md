@@ -72,24 +72,16 @@ var server = http.createServer(function(req, res) {
     // Root
     if (req.url == '/') {
         var filereader = fs.createReadStream('./public/index.html');
-        filereader.pipe(res);
+        return filereader.pipe(res);
     } else if (req.url.indexOf('/js/') === 0) {
-        // Build path
         var file = __dirname + '/public' + req.url;
-
-        fs.fileExists(file, function(err, exists) {
-            if (!exists) {
-                res.writeHead(404, req.url + 'not found');
-                return res.end();
-            }
-
-            var filereader = fs.createReadStream(file);
-            response.writeHead(200, {
-                'Content-Type': 'application/javascript'
-            });
-            filereader.pipe(res);
+        var filereader = fs.createReadStream(file);
+        res.writeHead(200, {
+            'Content-Type': 'application/javascript'
         });
+        return filereader.pipe(res);
     }
+    return res.end();
 });
 
 server.listen(8080);
@@ -114,19 +106,11 @@ var server = http.createServer(function(req, res) {
         filereader.pipe(res);
     } else if (req.url.indexOf('/js/') === 0) {
         var file = __dirname + '/public' + req.url;
-
-        fs.fileExists(file, function(err, exists) {
-            if (!exists) {
-                res.writeHead(404, req.url + 'not found');
-                return res.end();
-            }
-
-            var filereader = fs.createReadStream(file);
-            response.writeHead(200, {
-                'Content-Type': 'application/javascript'
-            });
-            filereader.pipe(res);
+        var filereader = fs.createReadStream(file);
+        res.writeHead(200, {
+            'Content-Type': 'application/javascript'
         });
+        filereader.pipe(res);
     } else { // Serve all other files found in public
         var reqUrl = url.parse(req.url);
         var file = __dirname + '/public' + reqUrl.pathname;
