@@ -4,6 +4,7 @@ var url = require('url');
 var port = process.env.PORT || 8080
 
 var Browserify = require('browserify');
+var browserify = Browserify();
 
 var OnlineGame = require('./lib/onlinegame');
 
@@ -14,26 +15,38 @@ var server = http.createServer(function(req, res) {
     } else if (req.url == '/local') {
         var filereader = fs.createReadStream('./public/index_local.html');
         filereader.pipe(res);
-    } else if (req.url == '/game.js') {
-        var browserify = Browserify();
+    } else if (req.url == '/js/game.js') { // Override requests for game.js
         browserify.require('./lib/game.js', {
             expose: 'game'
         });
         browserify.bundle().pipe(res);
-    } else {
+    } else if (req.url.indexOf('/js/') === 0) {
+        var file = __dirname + '/public' + req.url;
+        var filereader = fs.createReadStream(file);
+        res.writeHead(200, {
+            'Content-Type': 'application/javascript'
+        });
+        filereader.pipe(res);
+    } else { // Serve all other files found in public
         var reqUrl = url.parse(req.url);
-        return fs.readFile(__dirname + '/public' + reqUrl.pathname, function(err, content) {
-            if (err) {
-                res.writeHead(404);
-                return res.end(err.message);
+        var file = __dirname + '/public' + reqUrl.pathname;
+
+        fs.exists(file, function(err, exists) {
+            if (!exists) {
+                res.writeHead(404, req.url + 'not found');
+                return res.end();
             }
-            res.end(content);
+
+            var filereader = fs.createReadStream(file);
+            res.writeHead(200);
+            filereader.pipe(res);
         });
     }
-
 });
 
-var onlineGame = new OnlineGame({ timeout : 3000 });
+var onlineGame = new OnlineGame({
+    timeout: 3000
+});
 var io = require('socket.io')(server);
 
 onlineGame.on('start', function(game) {
