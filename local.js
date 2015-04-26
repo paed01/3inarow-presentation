@@ -4,24 +4,24 @@ var url = require('url');
 var port = process.env.PORT || 8080
 
 var server = http.createServer(function(req, res) {
-    if (req.url == '/') {
+    var reqPath = url.parse(req.url).pathname
+    if (reqPath == '/') {
         var filereader = fs.createReadStream('./public/index_local.html');
         return filereader.pipe(res);
-    } else if (req.url.indexOf('/js/') === 0) {
-        var reqUrl = url.parse(req.url);
-        var file = __dirname + '/public' + reqUrl.pathname;
-        var filereader = fs.createReadStream(file);
+    }
+    var file = __dirname + '/public' + reqPath;
+    var filereader = fs.createReadStream(file);
+    filereader.on("error",function(){
+        res.writeHead(404);
+        res.end();
+    })
+
+    if (reqPath.indexOf('/js/') === 0) {
         res.writeHead(200, {
             'Content-Type': 'application/javascript'
         });
-        return filereader.pipe(res);
-    } else {
-        var reqUrl = url.parse(req.url);
-        var file = __dirname + '/public' + reqUrl.pathname;
-        var filereader = fs.createReadStream(file);
-        return filereader.pipe(res);
-    }
-    return res.end(); 
+    } 
+    return filereader.pipe(res);
 });
 
 server.listen(port, function() {

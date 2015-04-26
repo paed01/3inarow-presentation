@@ -23,6 +23,11 @@ describe('game', function() {
             expect(game.inStreak(4, '7')).to.be.true();
             done();
         });
+
+        it('return false if not in streak',function(done){
+            expect(game.inStreak(8,7)).to.be.false();
+            done();
+        })
     });
 
 
@@ -31,7 +36,7 @@ describe('game', function() {
     // |**Row 1**|   `1`|    `2`|    `4`|    *7*|
     // |**Row 2**|   `8`|   `16`|   `32`|   *56*|
     // |**Row 3**|  `64`|  `128`|  `256`|  *448*|
-    // |*84*     |  *73*|  *146*|  *292*|  *273*|
+    // |     *84*|  *73*|  *146*|  *292*|  *273*|
     describe('#check', function() {
 
         it('returns result in callback', function(done) {
@@ -62,7 +67,7 @@ describe('game', function() {
             });
         });
 
-        it('returns winner in callback if X reaches 3 in a row', function(done) {
+        it('returns winner in callback if O reaches 3 in a row', function(done) {
             var game = new Game();
 
             game.start('O', function(){
@@ -73,6 +78,26 @@ describe('game', function() {
                     expect(err).to.not.exist();
                     expect(result.winner).to.exist();
                     expect(result.winner).to.equal('O');
+                    done();
+                });
+            });
+        });
+
+        // IT för draw
+        // X00
+        // oxx
+        // xoo
+        it('returns draw in callback if no one reaches 3 in a row', function(done) {
+            var game = new Game();
+
+            game.start('O', function(){
+                game.checked.X = 1 + 16 + 32 + 64;
+                game.checked.O = 2 + 4 + 8+ 128;
+
+                game.check(256, function(err, result){
+                    expect(err).to.not.exist();
+                    expect(result.winner).to.not.exist();
+                    expect(result.draw).to.be.true();
                     done();
                 });
             });
