@@ -14,7 +14,7 @@
   "author": "Peter Helje & Pål Edman",
   "license": "MIT",
   "dependencies": {
-    "browserify": "~9.0.3",
+    "browserify": "^10.0.0",
     "socket.io": "~1.0.6"
   },
   "devDependencies": {
