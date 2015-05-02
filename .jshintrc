@@ -21,6 +21,6 @@
   "white" : false,
   "predef": [ "-Promise" ],
   "globals": {
-    "describe": false
+    "describe": true
   }
 }

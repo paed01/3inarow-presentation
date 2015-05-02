@@ -13,18 +13,19 @@ var OnlineGame = require('./lib/onlinegame');
 
 var server = http.createServer(function(req, res) {
     var reqPath = url.parse(req.url).pathname;
+    var filereader;
     if (reqPath === '/') {
-        var filereader = fs.createReadStream('./public/index.html');
+        filereader = fs.createReadStream('./public/index.html');
         return filereader.pipe(res);
     } else if (reqPath === '/local') {
-        var filereader = fs.createReadStream('./public/index_local.html');
+        filereader = fs.createReadStream('./public/index_local.html');
         return filereader.pipe(res);
     } else if (reqPath === '/js/game.js') { // Override requests for game.js
         return jsBundle.bundle().pipe(res);
     }
 
     var file = __dirname + '/public' + reqPath;
-    var filereader = fs.createReadStream(file);
+    filereader = fs.createReadStream(file);
     filereader.on('error', function() {
         res.writeHead(404);
         res.end();

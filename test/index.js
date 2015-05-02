@@ -1,11 +1,10 @@
-/*jslint */
 var Code = require('code');
 var Lab = require('lab');
 var lab = exports.lab = Lab.script();
 var expect = Code.expect;
 
-var before = lab.before;
-var after = lab.after;
+// var before = lab.before;
+// var after = lab.after;
 var describe = lab.experiment;
 var it = lab.test;
 
@@ -27,7 +26,7 @@ describe('game', function() {
         it('return false if not in streak',function(done){
             expect(game.inStreak(8,7)).to.be.false();
             done();
-        })
+        });
     });
 
 
