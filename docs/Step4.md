@@ -135,14 +135,14 @@ In this presentation we use heroku to host the solution.
 
 To deploy to heroku the [heroku toolbelt](https://devcenter.heroku.com/articles/getting-started-with-nodejs#set-up) needs to be installed.
 
-Heroku looks in a file called `Procfile` for commands to run when deployed.
+Heroku looks for a file called `Procfile` for commands to run when deployed.
 
 Procfile:
 ```
 web: node demo.js
 ```
 
-Push to the heroku git repository to deploy.
+To deploy - push to the heroku git repository.
 
 `git push -u heroku`
 

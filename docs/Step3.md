@@ -158,7 +158,7 @@ server.listen(8080);
 
 ### Client socket.io
 
-The client needs to connect to the server via sockets. Fortunatelly the `socket.io` module exposes the client side script on `/socket.io/socket.io.js`. So we will start with including the javascript on the client.
+The client needs to connect to the server via sockets. Conveniently the `socket.io` module exposes the client side script on `/socket.io/socket.io.js`. So we will start with including the javascript on the client.
 
 ```html
 
