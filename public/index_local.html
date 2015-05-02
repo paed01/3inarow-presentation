@@ -90,16 +90,16 @@
                 });
 
                 $wr.on('start', function(e, game) {
-                    $('header').html('3 in a row - Start with ' + game.sign);
+                    $('.capture').html('Start with ' + game.sign);
                     $('a.game').trigger('reset');
                 });
 
                 $wr.on('gameover', function(e, result) {
                     if (result.draw) {
-                        $('header').html('3 in a row - Draw');
+                        $('.capture').html('It is a draw');
                         $('a.game').trigger('draw', result);
                     } else {
-                        $('header').html('3 in a row - Winner ' + result.winner);
+                        $('.capture').html('Winner ' + result.winner);
                         $('a.game').trigger('winner', result);
                     }
                 });
