@@ -1,4 +1,4 @@
-3inone-presentation
+3inarow-presentation
 ========
 
 Webstep presentation of node.js and socket.io in London October 2014.

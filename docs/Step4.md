@@ -10,8 +10,8 @@ Test the solution.
    - [Heroku](#heroku)
    - [Check log](#check-log)
 - [CI](#ci)
-   - [Test with Travis](#test-with-travis)
-   - [Client socket.io](#client-socketio)
+   - [Test on commit](#test-on-commit)
+   - [Deploy on successfull build](#deploy-on-successfull-build)
 
 # Test
 
@@ -65,13 +65,13 @@ describe('game', function() {
     });
   });
 });
-``
+```
 
 ## Run tests
 
 Npm has a command that is used to run tests: `npm test`. To define what tests should be executed when running the command you will have to modify `package.json`.
 
-In the section `scripts` add the following section:
+In the section `scripts` add the following property:
 
 `"test": "node node_modules/lab/bin/lab -v"`
 
@@ -155,7 +155,7 @@ Open a browser and navigate to [Travis](https://travis-ci.org/).
 
 Add a file called `.travis.yml` with the following content:
 
-``yaml
+```yaml
 language: node_js
 node_js:
 - "0.12"
