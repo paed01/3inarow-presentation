@@ -67,31 +67,42 @@ The client side javascripts also needs to be passed from the server to the clien
 
 var http = require('http');
 var fs = require('fs');
+var url = require('url');
 
 var server = http.createServer(function(req, res) {
-    // Root
-    if (req.url == '/') {
-        var filereader = fs.createReadStream('./public/index.html');
+    var reqPath = url.parse(req.url).pathname;
+    var filereader;
+    if (reqPath === '/') {
+        filereader = fs.createReadStream('./public/index.html');
         return filereader.pipe(res);
-    } else if (req.url.indexOf('/js/') === 0) {
-        var file = __dirname + '/public' + req.url;
-        var filereader = fs.createReadStream(file);
+    }
+
+    var file = __dirname + '/public' + reqPath;
+    filereader = fs.createReadStream(file);
+    filereader.on('error', function() {
+        res.writeHead(404);
+        res.end();
+    });
+
+    if (req.url.indexOf('/js/') === 0) {
         res.writeHead(200, {
             'Content-Type': 'application/javascript'
         });
-        return filereader.pipe(res);
     }
-    return res.end();
+
+    return filereader.pipe(res);
 });
 
 server.listen(8080);
 ```
 
+We added a new module `url`. It is used to parse the request url since styles tend to use querystring parameters when fetching other styles. The querystrings are ignored.
+
 ## Styles, fonts, less and scss
 
-Since one of us have smaller brother that is an Art Director the brother was forced to do the design. The problem is that Art Directors use a lot of css-magic, we mean a lot! Thank you Martin. So the next step is to make the server serve styles, fonts, less and scss(?).
+Since one of us have smaller brother that is an Art Director the brother was forced to do the design. The problem is that Art Directors use a lot of css-magic, we mean a lot! Thank you Martin. So the next step is to make the server serve styles, fonts, less, scss(?), and woff(?).
 
-But since this is a node.js solution this is a minor modification:
+This is a minor modification:
 
 ```javascript
 
@@ -100,37 +111,33 @@ var fs = require('fs');
 var url = require('url');
 
 var server = http.createServer(function(req, res) {
-    // Root
-    if (req.url == '/') {
-        var filereader = fs.createReadStream('./public/index.html');
-        filereader.pipe(res);
-    } else if (req.url.indexOf('/js/') === 0) {
-        var file = __dirname + '/public' + req.url;
-        var filereader = fs.createReadStream(file);
+    var reqPath = url.parse(req.url).pathname;
+    var filereader;
+    if (reqPath === '/') {
+        filereader = fs.createReadStream('./public/index.html');
+        return filereader.pipe(res);
+    }
+
+    var file = __dirname + '/public' + reqPath;
+    filereader = fs.createReadStream(file);
+    filereader.on('error', function() {
+        res.writeHead(404);
+        res.end();
+    });
+
+    if (req.url.indexOf('/js/') === 0) {
         res.writeHead(200, {
             'Content-Type': 'application/javascript'
         });
-        filereader.pipe(res);
-    } else { // Serve all other files found in public
-        var reqUrl = url.parse(req.url);
-        var file = __dirname + '/public' + reqUrl.pathname;
-
-        fs.fileExists(file, function(err, exists) {
-            if (!exists) {
-                res.writeHead(404, req.url + 'not found');
-                return res.end();
-            }
-
-            var filereader = fs.createReadStream(file);
-            response.writeHead(200);
-            filereader.pipe(res);
+    } else if (req.url.indexOf('/styles/') === 0) {
+        res.writeHead(200, {
+            'Content-Type': 'application/javascript'
         });
     }
+    return filereader.pipe(res);
 });
 
 server.listen(8080);
 ```
-
-We added a new module `url`. It is used to parse the request url since styles tend to use querystring parameters when fetching other styles. The querystrings are ignored.
 
 [Next >>](/docs/Step2.md)

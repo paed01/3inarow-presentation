@@ -21,7 +21,12 @@ var server = http.createServer(function(req, res) {
         res.writeHead(200, {
             'Content-Type': 'application/javascript'
         });
-    } 
+    } else if (req.url.indexOf('/styles/') === 0) {
+        res.writeHead(200, {
+            'Content-Type': 'text/css'
+        });
+    }
+
     return filereader.pipe(res);
 });
 
