@@ -56,11 +56,18 @@
 
         <script type="text/javascript" src="/js/jquery.min.js"></script>
         <script type="text/javascript" src="/js/game.js"></script>
+        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
         <script type="text/javascript">
             $(function() {
                 var $wr = $('body');
 
+                var Game = require('game');
                 var game = new Game();
+
+                var socket = io();
+                socket.on('hello', function(data) {
+                    console.log(data);
+                });
 
                 $wr.on('reset', 'a.game', function(e) {
                     $(this).attr('class', 'game start');
@@ -68,6 +75,9 @@
 
                 $wr.on('check', 'a.game:not(.disabled)', function(e, data) {
                     var $this = $(this);
+
+                    socket.emit('check', { sign: data.sign });
+
                     if (data.sign == 'X') {
                         $this.addClass( "cross" );
                     } else if (data.sign == 'O') {
@@ -90,16 +100,16 @@
                 });
 
                 $wr.on('start', function(e, game) {
-                    $('header').html('3 in a row - Start with ' + game.sign);
+                    $('.capture').html('Start with ' + game.sign);
                     $('a.game').trigger('reset');
                 });
 
                 $wr.on('gameover', function(e, result) {
                     if (result.draw) {
-                        $('header').html('3 in a row - Draw');
+                        $('.capture').html('It is a draw');
                         $('a.game').trigger('draw', result);
                     } else {
-                        $('header').html('3 in a row - Winner ' + result.winner);
+                        $('.capture').html('Winner ' + result.winner);
                         $('a.game').trigger('winner', result);
                     }
                 });

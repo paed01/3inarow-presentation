@@ -1,0 +1,26 @@
+{
+  "strict": false,
+  "bitwise": false,
+  "camelcase": false,
+  "curly": false,
+  "eqeqeq": true,
+  "esnext": false,
+  "immed": true,
+  "indent": 4,
+  "latedef": "nofunc",
+  "newcap": false,
+  "noarg": true,
+  "node": true,
+  "nonbsp": true,
+  "quotmark": "single",
+  "smarttabs": false,
+  "trailing": true,
+  "undef": true,
+  "unused": true,
+  "laxcomma": true,
+  "white" : false,
+  "predef": [ "-Promise" ],
+  "globals": {
+    "describe": true
+  }
+}

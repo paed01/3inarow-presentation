@@ -6,7 +6,7 @@ body {
 }
 
 header {
-	font-size: 22px;
+	font-size: 40px;
 	text-align: center;
 }
 
@@ -165,7 +165,6 @@ time, mark, audio, video {
   margin: 0;
   padding: 0;
   border: 0;
-  font-size: 100%;
   vertical-align: baseline;
 }
 

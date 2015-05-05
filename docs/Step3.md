@@ -64,46 +64,37 @@ var Browserify = require('browserify');
 // New instance of module
 var browserify = Browserify();
 
+// Create bundle for game.js
+var jsBundle = browserify.require('./lib/game.js', {
+    expose: 'game'
+});
+
 var server = http.createServer(function(req, res) {
-    // Root
-    if (req.url == '/') {
+    var reqPath = url.parse(req.url).pathname;
+    if (reqPath === '/') {
         var filereader = fs.createReadStream('./public/index.html');
-        filereader.pipe(res);
-    } else if (req.url == '/js/game.js') { // Override requests for game.js
-        browserify.require('./lib/game.js', {
-            expose: 'game'
-        });
-        browserify.bundle().pipe(res);
-    } else if (req.url.indexOf('/js/') === 0) {
-        var file = __dirname + '/public' + req.url;
+        return filereader.pipe(res);
+    } else if (reqPath === '/local') {
+        var filereader = fs.createReadStream('./public/index_local.html');
+        return filereader.pipe(res);
+    } else if (reqPath === '/js/game.js') { // Override requests for game.js
+        return jsBundle.bundle().pipe(res);
+    }
 
-        fs.fileExists(file, function(err, exists) {
-            if (!exists) {
-                res.writeHead(404, req.url + 'not found');
-                return res.end();
-            }
+    var file = __dirname + '/public' + reqPath;
+    var filereader = fs.createReadStream(file);
+    filereader.on('error', function() {
+        res.writeHead(404);
+        res.end();
+    });
 
-            var filereader = fs.createReadStream(file);
-            response.writeHead(200, {
-                'Content-Type': 'application/javascript'
-            });
-            filereader.pipe(res);
-        });
-    } else { // Serve all other files found in public
-        var reqUrl = url.parse(req.url);
-        var file = __dirname + '/public' + reqUrl.pathname;
-
-        fs.fileExists(file, function(err, exists) {
-            if (!exists) {
-                res.writeHead(404, req.url + 'not found');
-                return res.end();
-            }
-
-            var filereader = fs.createReadStream(file);
-            response.writeHead(200);
-            filereader.pipe(res);
+    if (req.url.indexOf('/js/') === 0) {
+        res.writeHead(200, {
+            'Content-Type': 'application/javascript'
         });
     }
+
+    return filereader.pipe(res);
 });
 
 server.listen(8080);
@@ -167,7 +158,7 @@ server.listen(8080);
 
 ### Client socket.io
 
-The client needs to connect to the server via sockets. Fortunatelly the `socket.io` module exposes the client side script on `/socket.io/socket.io.js`. So we will start with including the javascript on the client.
+The client needs to connect to the server via sockets. Conveniently the `socket.io` module exposes the client side script on `/socket.io/socket.io.js`. So we will start with including the javascript on the client.
 
 ```html
 
@@ -290,3 +281,4 @@ io.on('connection', function(socket) { // The callback argument is the client so
 server.listen(8080);
 ```
 
+[>> Next](/docs/Step4.md)

@@ -1,24 +1,35 @@
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
-var port = process.env.PORT || 8080
+var port = process.env.PORT || 8080;
 
 var server = http.createServer(function(req, res) {
-    if (req.url == '/') {
-        var filereader = fs.createReadStream('./public/index_local.html');
-        filereader.pipe(res);
-    } else {
-        var reqUrl = url.parse(req.url);
-        return fs.readFile(__dirname + '/public' + reqUrl.pathname, function(err, content) {
-            if (err) {
-                res.writeHead(404);
-                return res.end(err.message);
-            }
-            res.end(content);
+    var reqPath = url.parse(req.url).pathname;
+    var filereader;
+    if (reqPath === '/') {
+        filereader = fs.createReadStream('./public/index_local.html');
+        return filereader.pipe(res);
+    }
+    var file = __dirname + '/public' + reqPath;
+    filereader = fs.createReadStream(file);
+    filereader.on('error',function(){
+        res.writeHead(404);
+        res.end();
+    });
+
+    if (reqPath.indexOf('/js/') === 0) {
+        res.writeHead(200, {
+            'Content-Type': 'application/javascript'
+        });
+    } else if (req.url.indexOf('/styles/') === 0) {
+        res.writeHead(200, {
+            'Content-Type': 'text/css'
         });
     }
+
+    return filereader.pipe(res);
 });
 
 server.listen(port, function() {
-    console.log("Static file server running at\n  => http://localhost:" + port + "/\nCTRL + C to shutdown");
+    console.log('Static file server running at\n  => http://localhost:' + port + '/\nCTRL + C to shutdown');
 });

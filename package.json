@@ -1,10 +1,10 @@
 {
   "name": "3inarow-presentation",
-  "version": "1.1.0",
+  "version": "2.1.0",
   "description": "3 in a row game",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/lab/bin/lab",
+    "test": "node node_modules/lab/bin/lab -v",
     "start": "node index.js"
   },
   "keywords": [
@@ -14,7 +14,7 @@
   "author": "Peter Helje & Pål Edman",
   "license": "MIT",
   "dependencies": {
-    "browserify": "~9.0.3",
+    "browserify": "^10.0.0",
     "socket.io": "~1.0.6"
   },
   "devDependencies": {

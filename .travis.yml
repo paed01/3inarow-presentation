@@ -1,10 +1,4 @@
 language: node_js
 node_js:
-- 0.1
-deploy:
-  provider: heroku
-  api_key:
-    secure: VLkyO2BOcw0pV1a7Mg5Fw9AUFNZaoe/vomPmUiRrUOcs/HveNYVyOpi7KIzYKzW1IoBNqBAjZ2qDKlPO7yEE1RbA5J4qtg5K7jCvp7+qr9KpBGDMKBQ2ZAjjbUjgC36tCRRnchTNOHgs8xTmwqhZuBpNkWtG4wsilxweMynKDOA=
-  app: inarow
-  on:
-    repo: paed01/3inarow-presentation
+- '0.10'
+- '0.12'

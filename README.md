@@ -1,5 +1,7 @@
-3inone-presentation
+3inarow-presentation
 ========
+
+[![Build Status](https://travis-ci.org/paed01/3inarow-presentation.svg?branch=presentation%2F5mayo)](https://travis-ci.org/paed01/3inarow-presentation)
 
 Webstep presentation of node.js and socket.io in London October 2014.
 
