@@ -82,25 +82,42 @@ describe('game', function() {
             });
         });
 
-        // IT för draw
-        // X00
-        // oxx
-        // xoo
-        it('returns draw in callback if no one reaches 3 in a row', function(done) {
+        it('return draw if no winner', function(done) {
             var game = new Game();
 
-            game.start('O', function(){
+            game.start('O', function() {
                 game.checked.X = 1 + 16 + 32 + 64;
-                game.checked.O = 2 + 4 + 8+ 128;
+                game.checked.O = 2 + 4 + 8 + 128;
 
-                game.check(256, function(err, result){
+                game.check(256, function(err, result) {
                     expect(err).to.not.exist();
                     expect(result.winner).to.not.exist();
-                    expect(result.draw).to.be.true();
+                    expect(result.draw).to.equal(true);
                     done();
                 });
             });
+
         });
+
 
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
